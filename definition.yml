@@ -1,6 +1,6 @@
 id: scorpius
-docker_repository: dynverse/dynmethods:scorpius
-container_url: https://github.com/dynverse/dynmethods/tree/master/containers/scorpius
+docker_repository: dynverse/ti_scorpius
+container_url: https://github.com/dynverse/ti_scorpius
 name: SCORPIUS
 type: algorithm
 implementation_id: scorpius
