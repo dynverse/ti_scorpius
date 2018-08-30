@@ -1,9 +1,9 @@
 FROM dynverse/dynwrap:r
 
-LABEL version 0.1.0.1
+LABEL version 0.1.0
 
 RUN R -e 'devtools::install_cran("SCORPIUS")'
 
 ADD . /code
 
-ENTRYPOINT /code/run.sh
+ENTRYPOINT Rscript /code/run.R
