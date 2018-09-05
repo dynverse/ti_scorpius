@@ -10,13 +10,12 @@ From: dynverse/dynwrap:r
 %labels
     version 0.1.1
 
-%post
-    chmod -R a+r /code
-    chmod a+x /code
-    R -e 'devtools::install_cran("SCORPIUS")'
-
 %files
     . /code
+
+%post
+    chmod -R 755 '/code'
+    R -e 'devtools::install_cran("SCORPIUS")'
 
 %runscript
     exec Rscript /code/run.R
