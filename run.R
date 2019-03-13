@@ -1,3 +1,11 @@
+#!/usr/local/bin/Rscript
+
+task <- dyncli::main()
+task <- dyncli::main(
+  c("--dataset", "/code/example.h5", "--output", "/mnt/output"),
+  "/code/definition.yml"
+)
+
 library(jsonlite)
 library(readr)
 library(dplyr)
@@ -8,16 +16,8 @@ library(SCORPIUS)
 #   ____________________________________________________________________________
 #   Load data                                                               ####
 
-data <- read_rds("/ti/input/data.rds")
-params <- jsonlite::read_json("/ti/input/params.json")
-
-#' @examples
-#' data <- dyntoy::generate_dataset(id = "test", num_cells = 300, num_features = 300, model = "linear") %>% c(., .$prior_information)
-#' params <- yaml::read_yaml("containers/scorpius/definition.yml")$parameters %>%
-#'   {.[names(.) != "forbidden"]} %>%
-#'   map(~ .$default)
-
-expression <- data$expression
+expression <- as.matrix(task$expression)
+params <- task$params
 
 #   ____________________________________________________________________________
 #   Infer trajectory                                                        ####
@@ -61,16 +61,17 @@ dimred_trajectory_segments <-
       magrittr::set_colnames(., paste0("to_comp_", seq_len(ncol(.))))
   )
 
-# return output
-output <- lst(
-  cell_ids = names(traj$time),
-  pseudotime = traj$time,
-  dimred = space,
-  dimred_trajectory_segments = dimred_trajectory_segments,
-  timings = checkpoints
-)
-
 #   ____________________________________________________________________________
 #   Save output                                                             ####
 
-write_rds(output, "/ti/output/output.rds")
+output <- dynwrap::wrap_data(cell_ids = names(traj$time)) %>%
+  dynwrap::add_linear_trajectory(
+    pseudotime = traj$time
+  ) %>%
+  dynwrap::add_dimred(
+    dimred = space#,
+    #dimred_trajectory_segments = dimred_trajectory_segments
+  ) %>%
+  dynwrap::add_timings(timings = checkpoints)
+
+output %>% dyncli::write_output(task$output)
