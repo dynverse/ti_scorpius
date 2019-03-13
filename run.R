@@ -2,8 +2,8 @@
 
 task <- dyncli::main()
 # task <- dyncli::main(
-#   c("--dataset", "/code/example.h5", "--output", "/mnt/output"),
-#   "/code/definition.yml"
+#   c("--dataset", "./example.h5", "--output", "./output.h5"),
+#   "./definition.yml"
 # )
 
 library(jsonlite)
@@ -52,15 +52,6 @@ traj <- SCORPIUS::infer_trajectory(
 # TIMING: done with method
 checkpoints$method_aftermethod <- as.numeric(Sys.time())
 
-# convert trajectory to segments
-dimred_trajectory_segments <-
-  cbind(
-    traj$path[-nrow(traj$path), , drop = FALSE] %>%
-      magrittr::set_colnames(., paste0("from_comp_", seq_len(ncol(.)))),
-    traj$path[-1, , drop = FALSE] %>%
-      magrittr::set_colnames(., paste0("to_comp_", seq_len(ncol(.))))
-  )
-
 #   ____________________________________________________________________________
 #   Save output                                                             ####
 
@@ -68,10 +59,17 @@ output <- dynwrap::wrap_data(cell_ids = names(traj$time)) %>%
   dynwrap::add_linear_trajectory(
     pseudotime = traj$time
   ) %>%
-  dynwrap::add_dimred(
-    dimred = space#,
-    #dimred_trajectory_segments = dimred_trajectory_segments
-  ) %>%
   dynwrap::add_timings(timings = checkpoints)
+
+# convert trajectory to segments
+dimred_segment_points <- traj$path
+dimred_segment_progressions <- output$progressions %>% select(from, to, percentage)
+
+output <- output %>% dynwrap::add_dimred(
+  dimred = space,
+  dimred_segment_points = dimred_segment_points,
+  dimred_segment_progressions = dimred_segment_progressions,
+  connect_segments = TRUE
+)
 
 output %>% dyncli::write_output(task$output)
