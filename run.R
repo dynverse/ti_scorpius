@@ -1,6 +1,6 @@
 #!/usr/local/bin/Rscript
 
-# task <- dyncli::main()
+task <- dyncli::main()
 #task <- dyncli::main(
 #  c("--dataset", "./example.h5", "--output", "./output.h5"),
 #  "./definition.yml"
