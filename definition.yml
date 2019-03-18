@@ -70,10 +70,9 @@ parameters:
     default: 0.001
     distribution:
       type: expuniform
-      upper: 100000.0
+      upper: 100000
       lower: 1.0e-05
-    description: '\code{\link[princurve]{principal_curve}} parameter: convergence
-      threshhold on shortest distances to the curve'
+    description: '`principal_curve` parameter; convergence threshhold on shortest distances to the curve'
   - id: maxit
     type: integer
     default: 10
@@ -81,8 +80,7 @@ parameters:
       type: uniform
       upper: 50
       lower: 0
-    description: '\code{\link[princurve]{principal_curve}} parameter: maximum number
-      of iterations'
+    description: '`principal_curve` parameter; maximum number of iterations'
   - id: stretch
     type: numeric
     default: 0.0
@@ -90,8 +88,7 @@ parameters:
       type: uniform
       upper: 5.0
       lower: 0.0
-    description: '\code{\link[princurve]{principal_curve}} parameter: a factor by
-      which the curve can be extrapolated when points are projected'
+    description: '`principal_curve` parameter; a factor by which the curve can be extrapolated when points are projected'
   - id: smoother
     type: character
     default: smooth_spline
@@ -99,10 +96,8 @@ parameters:
     - smooth_spline
     - lowess
     - periodic_lowess
-    description: '\code{\link[princurve]{principal_curve}} parameter: choice of smoother'
+    description: '`principal_curve` parameter; choice of smoother'
   - id: sparse
     type: logical
     default: yes
-    description: |-
-      Whether or not to use sparse MDS dimensionality reduction,
-      for datasets with large amounts of cells.
+    description: Whether or not to use sparse MDS dimensionality reduction, for datasets with large amounts of cells.

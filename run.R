@@ -1,10 +1,6 @@
 #!/usr/local/bin/Rscript
 
 task <- dyncli::main()
-#task <- dyncli::main(
-#  c("--dataset", "./example.h5", "--output", "./output.h5"),
-#  "./definition.yml"
-#)
 
 library(jsonlite)
 library(readr)
@@ -29,7 +25,7 @@ if (params$k <= 1) {
 }
 
 # TIMING: done with preproc
-checkpoints <- list(method_afterpreproc = as.numeric(Sys.time()))
+checkpoints <- list(method_afterpreproc = Sys.time())
 
 space <- SCORPIUS::reduce_dimensionality(
   x = expression,
@@ -50,12 +46,13 @@ traj <- SCORPIUS::infer_trajectory(
 )
 
 # TIMING: done with method
-checkpoints$method_aftermethod <- as.numeric(Sys.time())
+checkpoints$method_aftermethod <- Sys.time()
 
 #   ____________________________________________________________________________
 #   Save output                                                             ####
 
-output <- dynwrap::wrap_data(cell_ids = names(traj$time)) %>%
+output <- 
+  dynwrap::wrap_data(cell_ids = names(traj$time)) %>%
   dynwrap::add_linear_trajectory(
     pseudotime = traj$time
   ) %>%
@@ -64,9 +61,6 @@ output <- dynwrap::wrap_data(cell_ids = names(traj$time)) %>%
 # convert trajectory to segments
 dimred_segment_points <- traj$path
 dimred_segment_progressions <- output$progressions %>% select(from, to, percentage)
-
-print(dimred_segment_points)
-print(dimred_segment_progressions)
 
 output <- output %>% dynwrap::add_dimred(
   dimred = space,
