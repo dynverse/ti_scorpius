@@ -13,15 +13,15 @@ library(SCORPIUS)
 #   Load data                                                               ####
 
 expression <- as.matrix(task$expression)
-params <- task$params
+parameters <- task$parameters
 
 #   ____________________________________________________________________________
 #   Infer trajectory                                                        ####
 
 
 # use k <= 1 to turn off clustering
-if (params$k <= 1) {
-  params$k <- NULL
+if (parameters$k <= 1) {
+  parameters$k <- NULL
 }
 
 # TIMING: done with preproc
@@ -29,20 +29,20 @@ checkpoints <- list(method_afterpreproc = Sys.time())
 
 space <- SCORPIUS::reduce_dimensionality(
   x = expression,
-  dist_fun = function(x, y = NULL) dynutils::calculate_distance(x = x, y = y, method = params$distance_method),
-  landmark_method = ifelse(params$sparse, "naive", "none"),
-  ndim = params$ndim,
+  dist_fun = function(x, y = NULL) dynutils::calculate_distance(x = x, y = y, method = parameters$distance_method),
+  landmark_method = ifelse(parameters$sparse, "naive", "none"),
+  ndim = parameters$ndim,
   num_landmarks = ifelse(nrow(expression) > 500, 500, nrow(expression))
 )
 
 # infer a trajectory through the data
 traj <- SCORPIUS::infer_trajectory(
   space,
-  k = params$k,
-  thresh = params$thresh,
-  maxit = params$maxit,
-  stretch = params$stretch,
-  smoother = params$smoother
+  k = parameters$k,
+  thresh = parameters$thresh,
+  maxit = parameters$maxit,
+  stretch = parameters$stretch,
+  smoother = parameters$smoother
 )
 
 # TIMING: done with method
