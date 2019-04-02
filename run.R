@@ -1,13 +1,12 @@
 #!/usr/local/bin/Rscript
 
+requireNamespace("dyncli", quietly = TRUE)
 task <- dyncli::main()
 
-library(jsonlite)
-library(readr)
-library(dplyr)
-library(purrr)
-
-library(SCORPIUS)
+library(dplyr, warn.conflicts = FALSE)
+requireNamespace("dynutils", quietly = TRUE)
+requireNamespace("dynwrap", quietly = TRUE)
+requireNamespace("SCORPIUS", quietly = TRUE)
 
 #   ____________________________________________________________________________
 #   Load data                                                               ####
@@ -62,11 +61,13 @@ output <-
 dimred_segment_points <- traj$path
 dimred_segment_progressions <- output$progressions %>% select(from, to, percentage)
 
-output <- output %>% dynwrap::add_dimred(
-  dimred = space,
-  dimred_segment_points = dimred_segment_points,
-  dimred_segment_progressions = dimred_segment_progressions,
-  connect_segments = TRUE
-)
+output <-
+  output %>%
+  dynwrap::add_dimred(
+    dimred = space,
+    dimred_segment_points = dimred_segment_points,
+    dimred_segment_progressions = dimred_segment_progressions,
+    connect_segments = TRUE
+  )
 
 output %>% dyncli::write_output(task$output)
