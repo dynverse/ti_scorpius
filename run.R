@@ -1,76 +1,73 @@
-library(jsonlite)
-library(readr)
-library(dplyr)
-library(purrr)
+#!/usr/local/bin/Rscript
 
-library(SCORPIUS)
+requireNamespace("dyncli", quietly = TRUE)
+task <- dyncli::main()
+
+library(dplyr, warn.conflicts = FALSE)
+requireNamespace("dynutils", quietly = TRUE)
+requireNamespace("dynwrap", quietly = TRUE)
+requireNamespace("SCORPIUS", quietly = TRUE)
 
 #   ____________________________________________________________________________
 #   Load data                                                               ####
 
-data <- read_rds("/ti/input/data.rds")
-params <- jsonlite::read_json("/ti/input/params.json")
-
-#' @examples
-#' data <- dyntoy::generate_dataset(id = "test", num_cells = 300, num_features = 300, model = "linear") %>% c(., .$prior_information)
-#' params <- yaml::read_yaml("containers/scorpius/definition.yml")$parameters %>%
-#'   {.[names(.) != "forbidden"]} %>%
-#'   map(~ .$default)
-
-expression <- data$expression
+expression <- as.matrix(task$expression)
+parameters <- task$parameters
 
 #   ____________________________________________________________________________
 #   Infer trajectory                                                        ####
 
 
 # use k <= 1 to turn off clustering
-if (params$k <= 1) {
-  params$k <- NULL
+if (parameters$k <= 1) {
+  parameters$k <- NULL
 }
 
 # TIMING: done with preproc
-checkpoints <- list(method_afterpreproc = as.numeric(Sys.time()))
+checkpoints <- list(method_afterpreproc = Sys.time())
 
 space <- SCORPIUS::reduce_dimensionality(
   x = expression,
-  dist_fun = function(x, y = NULL) dynutils::calculate_distance(x = x, y = y, method = params$distance_method),
-  landmark_method = ifelse(params$sparse, "naive", "none"),
-  ndim = params$ndim,
+  dist_fun = function(x, y = NULL) dynutils::calculate_distance(x = x, y = y, method = parameters$distance_method),
+  landmark_method = ifelse(parameters$sparse, "naive", "none"),
+  ndim = parameters$ndim,
   num_landmarks = ifelse(nrow(expression) > 500, 500, nrow(expression))
 )
 
 # infer a trajectory through the data
 traj <- SCORPIUS::infer_trajectory(
   space,
-  k = params$k,
-  thresh = params$thresh,
-  maxit = params$maxit,
-  stretch = params$stretch,
-  smoother = params$smoother
+  k = parameters$k,
+  thresh = parameters$thresh,
+  maxit = parameters$maxit,
+  stretch = parameters$stretch,
+  smoother = parameters$smoother
 )
 
 # TIMING: done with method
-checkpoints$method_aftermethod <- as.numeric(Sys.time())
-
-# convert trajectory to segments
-dimred_trajectory_segments <-
-  cbind(
-    traj$path[-nrow(traj$path), , drop = FALSE] %>%
-      magrittr::set_colnames(., paste0("from_comp_", seq_len(ncol(.)))),
-    traj$path[-1, , drop = FALSE] %>%
-      magrittr::set_colnames(., paste0("to_comp_", seq_len(ncol(.))))
-  )
-
-# return output
-output <- lst(
-  cell_ids = names(traj$time),
-  pseudotime = traj$time,
-  dimred = space,
-  dimred_trajectory_segments = dimred_trajectory_segments,
-  timings = checkpoints
-)
+checkpoints$method_aftermethod <- Sys.time()
 
 #   ____________________________________________________________________________
 #   Save output                                                             ####
 
-write_rds(output, "/ti/output/output.rds")
+output <- 
+  dynwrap::wrap_data(cell_ids = names(traj$time)) %>%
+  dynwrap::add_linear_trajectory(
+    pseudotime = traj$time
+  ) %>%
+  dynwrap::add_timings(timings = checkpoints)
+
+# convert trajectory to segments
+dimred_segment_points <- traj$path
+dimred_segment_progressions <- output$progressions %>% select(from, to, percentage)
+
+output <-
+  output %>%
+  dynwrap::add_dimred(
+    dimred = space,
+    dimred_segment_points = dimred_segment_points,
+    dimred_segment_progressions = dimred_segment_progressions,
+    connect_segments = TRUE
+  )
+
+output %>% dyncli::write_output(task$output)
