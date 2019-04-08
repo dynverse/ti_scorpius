@@ -1,1 +1,4 @@
-*.simg
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
