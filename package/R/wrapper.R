@@ -68,7 +68,7 @@ run_fun <- function(expression, priors, parameters, seed = NULL, verbose = 0)  {
 }
 
 
-definition <- dynwrap:::.method_load_definition(system.file("definition.yml", package = "ti.scorpius"))
+definition <- dynwrap:::.method_load_definition(system.file("definition.yml", package = "tiscorpius"))
 
 
 ti_scorpius <- dynwrap::create_ti_method_r(

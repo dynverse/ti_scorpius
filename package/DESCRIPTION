@@ -1,4 +1,4 @@
-Package: ti.scorpius
+Package: tiscorpius
 Type: Package
 Title: A dynverse wrapper of SCORPIUS
 Version: 0.1.0
