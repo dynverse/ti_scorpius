@@ -70,10 +70,9 @@ run_fun <- function(expression, priors, parameters, seed = NULL, verbose = 0)  {
 
 definition <- dynwrap:::.method_load_definition(system.file("definition.yml", package = "tiscorpius"))
 
-#' @import dplyr
-#' @import purrr
-#' @import SCORPIUS
+#' Infer a trajectory using SCORPIUS
 #'
+#' @eval dynwrap::generate_parameter_documentation(definition)
 #' @export
 ti_scorpius <- dynwrap::create_ti_method_r(
   definition = definition,
