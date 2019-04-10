@@ -3,71 +3,14 @@
 requireNamespace("dyncli", quietly = TRUE)
 task <- dyncli::main()
 
-library(dplyr, warn.conflicts = FALSE)
-requireNamespace("dynutils", quietly = TRUE)
-requireNamespace("dynwrap", quietly = TRUE)
-requireNamespace("SCORPIUS", quietly = TRUE)
+library(tiscorpius, warn.conflicts = FALSE)
 
-#   ____________________________________________________________________________
-#   Load data                                                               ####
-
-expression <- as.matrix(task$expression)
-parameters <- task$parameters
-
-#   ____________________________________________________________________________
-#   Infer trajectory                                                        ####
-
-
-# use k <= 1 to turn off clustering
-if (parameters$k <= 1) {
-  parameters$k <- NULL
-}
-
-# TIMING: done with preproc
-checkpoints <- list(method_afterpreproc = Sys.time())
-
-space <- SCORPIUS::reduce_dimensionality(
-  x = expression,
-  dist_fun = function(x, y = NULL) dynutils::calculate_distance(x = x, y = y, method = parameters$distance_method),
-  landmark_method = ifelse(parameters$sparse, "naive", "none"),
-  ndim = parameters$ndim,
-  num_landmarks = ifelse(nrow(expression) > 500, 500, nrow(expression))
+output <- tiscorpius::run_fun(
+  expression = task$expression,
+  priors = task$priors,
+  parameters = task$parameters,
+  seed = task$seed,
+  verbose = task$verbose
 )
 
-# infer a trajectory through the data
-traj <- SCORPIUS::infer_trajectory(
-  space,
-  k = parameters$k,
-  thresh = parameters$thresh,
-  maxit = parameters$maxit,
-  stretch = parameters$stretch,
-  smoother = parameters$smoother
-)
-
-# TIMING: done with method
-checkpoints$method_aftermethod <- Sys.time()
-
-#   ____________________________________________________________________________
-#   Save output                                                             ####
-
-output <- 
-  dynwrap::wrap_data(cell_ids = names(traj$time)) %>%
-  dynwrap::add_linear_trajectory(
-    pseudotime = traj$time
-  ) %>%
-  dynwrap::add_timings(timings = checkpoints)
-
-# convert trajectory to segments
-dimred_segment_points <- traj$path
-dimred_segment_progressions <- output$progressions %>% select(from, to, percentage)
-
-output <-
-  output %>%
-  dynwrap::add_dimred(
-    dimred = space,
-    dimred_segment_points = dimred_segment_points,
-    dimred_segment_progressions = dimred_segment_progressions,
-    connect_segments = TRUE
-  )
-
-output %>% dyncli::write_output(task$output)
+dyncli::write_output(output, task$output)
