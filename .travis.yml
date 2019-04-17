@@ -14,11 +14,12 @@ before_install:
 - source credentials
 - source <(curl -sSL https://raw.githubusercontent.com/dynverse/travis_scripts/master/helper.sh)
 - git clone --branch cache-master https://github.com/dynverse/travis_package_cacher.git
-- cd travis_package_cacher
+- pushd travis_package_cacher
 - cat cache.tar.gz.part-* > cache.tar.gz
-- tar -zxvf cache.tar.gz
+- tar -zxf cache.tar.gz
 - rm cache.tar*
 - mv * $HOME/R/Library/
+- popd
 install:
 - set -e
 - update_docker
