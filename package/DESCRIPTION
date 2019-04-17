@@ -15,4 +15,5 @@ Imports:
   purrr
 RoxygenNote: 6.1.1
 Suggests: 
-    testthat
+    testthat,
+    dyntoy

@@ -16,5 +16,10 @@ data$parameters <- list()
 data$seed <- 1L
 
 # write example dataset to file
-file <- commandArgs(trailingOnly = TRUE)[[1]]
-dynutils::write_h5(data, file)
+file <- commandArgs(trailingOnly = TRUE)
+if (length(file) > 0) {
+  file <- file[[1]]
+  dynutils::write_h5(data, file)
+}
+
+data

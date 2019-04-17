@@ -22,7 +22,7 @@ run_fun <- function(expression, priors, parameters, seed = NULL, verbose = 0)  {
 
   space <- SCORPIUS::reduce_dimensionality(
     x = expression,
-    dist_fun = function(x, y = NULL) dynutils::calculate_distance(x = x, y = y, method = parameters$distance_method),
+    dist_fun = function(x, y = NULL) as.matrix(dynutils::calculate_distance(x = x, y = y, method = parameters$distance_method)),
     landmark_method = ifelse(parameters$sparse, "naive", "none"),
     ndim = parameters$ndim,
     num_landmarks = ifelse(nrow(expression) > 500, 500, nrow(expression))
