@@ -1,3 +1,10 @@
+#' Run scorpius
+#'
+#' @param expression Expression matrix
+#' @param parameters Parameters
+#' @param priors Priors
+#' @param verbose Verbosity level
+#' @param seed Random seed
 #' @import dplyr
 #' @import purrr
 #' @import SCORPIUS
