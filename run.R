@@ -12,23 +12,21 @@ requireNamespace("SCORPIUS", quietly = TRUE)
 #   ____________________________________________________________________________
 #   Load data                                                               ####
 
-expression <- as.matrix(task$expression)
 parameters <- task$parameters
-
-#   ____________________________________________________________________________
-#   Infer trajectory                                                        ####
-
 
 # use k <= 1 to turn off clustering
 if (parameters$k <= 1) {
   parameters$k <- NULL
 }
 
+#   ____________________________________________________________________________
+#   Infer trajectory                                                        ####
+
 # TIMING: done with preproc
 checkpoints <- list(method_afterpreproc = Sys.time())
 
 space <- SCORPIUS::reduce_dimensionality(
-  x = expression,
+  x = task$expression,
   dist = parameters$distance_method,
   ndim = parameters$ndim
 )
