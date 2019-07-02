@@ -2,6 +2,7 @@
 
 requireNamespace("dyncli", quietly = TRUE)
 task <- dyncli::main()
+# task <- dyncli::main(args = strsplit("--dataset ~/example.h5 --output ~/output.h5", " ")[[1]], definition_location = "ti_scorpius/definition.yml")
 
 library(dplyr, warn.conflicts = FALSE)
 requireNamespace("dynutils", quietly = TRUE)
@@ -28,10 +29,8 @@ checkpoints <- list(method_afterpreproc = Sys.time())
 
 space <- SCORPIUS::reduce_dimensionality(
   x = expression,
-  dist_fun = function(x, y = NULL) dynutils::calculate_distance(x = x, y = y, method = parameters$distance_method),
-  landmark_method = ifelse(parameters$sparse, "naive", "none"),
-  ndim = parameters$ndim,
-  num_landmarks = ifelse(nrow(expression) > 500, 500, nrow(expression))
+  dist = parameters$distance_method,
+  ndim = parameters$ndim
 )
 
 # infer a trajectory through the data
@@ -50,12 +49,16 @@ checkpoints$method_aftermethod <- Sys.time()
 #   ____________________________________________________________________________
 #   Save output                                                             ####
 
-output <- 
-  dynwrap::wrap_data(cell_ids = names(traj$time)) %>%
+output <-
+  dynwrap::wrap_data(
+    cell_ids = names(traj$time)
+  ) %>%
   dynwrap::add_linear_trajectory(
     pseudotime = traj$time
   ) %>%
-  dynwrap::add_timings(timings = checkpoints)
+  dynwrap::add_timings(
+    timings = checkpoints
+  )
 
 # convert trajectory to segments
 dimred_segment_points <- traj$path
@@ -70,4 +73,4 @@ output <-
     connect_segments = TRUE
   )
 
-output %>% dyncli::write_output(task$output)
+dyncli::write_output(output, task$output)

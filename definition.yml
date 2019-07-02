@@ -22,7 +22,6 @@ method:
     email: yvan.saeys@ugent.be
     github: saeyslab
 
-
 manuscript:
   doi: 10.1101/079509
   google_scholar_cluster_id: '7752629025700865018'
@@ -45,7 +44,7 @@ parameters:
     values:
     - spearman
     - pearson
-    - kendall
+    - cosine
     description: |-
       A character string indicating which correlation
       coefficient (or covariance) is to be computed. One of "pearson", "kendall", or "spearman".
@@ -97,7 +96,3 @@ parameters:
     - lowess
     - periodic_lowess
     description: '`principal_curve` parameter; choice of smoother'
-  - id: sparse
-    type: logical
-    default: yes
-    description: Whether or not to use sparse MDS dimensionality reduction, for datasets with large amounts of cells.
