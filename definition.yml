@@ -44,10 +44,9 @@ parameters:
     values:
     - spearman
     - pearson
-    - angular
     description: |-
       A character string indicating which correlation
-      coefficient (or covariance) is to be computed. One of "pearson", "spearman" (default), or "angular".
+      coefficient (or covariance) is to be computed. One of "pearson" or "spearman" (default).
   - id: ndim
     type: integer
     default: 3
