@@ -1,1 +1,1 @@
-VERSION=$(cat package/DESCRIPTION | sed -n 's/.*Version: \(.*\).*/\1/p')
+VERSION=1.1.0
