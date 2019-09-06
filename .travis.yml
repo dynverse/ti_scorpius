@@ -20,6 +20,7 @@ install:
 - install_hdf5
 - install_cran remotes
 - install_github_withdeps dynverse/dynwrap dynverse/dyntoy
+- wget https://raw.githubusercontent.com/rcannood/SCORPIUS/dynwrap/inst/dynwrap/example.sh
 script:
 - source version
 - build_docker
