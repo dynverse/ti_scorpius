@@ -13,11 +13,11 @@ before_install:
   -in credentials.enc -out credentials -d
 - source credentials
 - source <(curl -sSL https://raw.githubusercontent.com/dynverse/travis_scripts/master/helper.sh)
-- install_dynverse
 install:
 - set -e
 - update_docker
 - install_hdf5
+- install_dynverse
 - install_cran remotes
 - install_github_withdeps dynverse/dynwrap dynverse/dyntoy
 script:
