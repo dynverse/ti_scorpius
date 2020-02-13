@@ -1,6 +1,7 @@
 #!/usr/local/bin/Rscript
 
 requireNamespace("dyncli", quietly = TRUE)
+# task <- dyncli::main(c("--dataset", "/ti/input.h5"))
 task <- dyncli::main()
 # task <- dyncli::main(args = strsplit("--dataset ~/example.h5 --output ~/output.h5", " ")[[1]], definition_location = "ti_scorpius/definition.yml")
 
