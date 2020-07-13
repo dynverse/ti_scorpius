@@ -2,7 +2,7 @@ FROM dynverse/dynwrap_latest:v0.1.0
 
 ARG GITHUB_PAT
 
-RUN R -e 'install.packages("SCORPIUS")'
+RUN R -e 'remotes::install_github("rcannood/SCORPIUS@devel")'
 
 RUN mkdir /code; \
   PACKPATH=`Rscript -e 'cat(system.file("dynwrap", package = "SCORPIUS"), "\n", sep = "")'`; \
