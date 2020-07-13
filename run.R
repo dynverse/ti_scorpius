@@ -26,11 +26,17 @@ if (parameters$k <= 1) {
 # TIMING: done with preproc
 checkpoints <- list(method_afterpreproc = Sys.time())
 
-space <- SCORPIUS::reduce_dimensionality(
-  x = task$expression,
-  dist = parameters$distance_method,
-  ndim = parameters$ndim
-)
+# use prior dimred if available
+space <-
+  if (is.null(task$priors$dimred)) {
+    SCORPIUS::reduce_dimensionality(
+      x = task$expression,
+      dist = parameters$distance_method,
+      ndim = parameters$ndim
+    )
+  } else {
+    task$priors$dimred
+  }
 
 # infer a trajectory through the data
 traj <- SCORPIUS::infer_trajectory(
